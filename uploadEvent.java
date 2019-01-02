@@ -11,7 +11,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +40,7 @@ public class uploadEvent extends javax.swing.JFrame {
         Statement st = null;
         ResultSet result = null;
         try{
+             //conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/", "event", "event");
             conn= DriverManager.getConnection("jdbc:derby://localhost:1527/Event", "event", "event");
             return conn;
         }
@@ -49,7 +53,7 @@ public class uploadEvent extends javax.swing.JFrame {
     public boolean input_Check(){
         boolean flag = false;
        if (eventNameField.getText()==null || eventDiscriptionField.getText()==null
-               ||participantField.getText()==null||emailField.getText()==null)
+               ||participantField.getText()==null||emailField.getText()==null||add_Date.getDate()==null)
          {
             return flag= false;
          }
@@ -77,14 +81,15 @@ public class uploadEvent extends javax.swing.JFrame {
         participantField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         emailField = new javax.swing.JTextField();
-        updateButton = new javax.swing.JButton();
+        InsertButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         Event_Table = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
-        addDate = new datechooser.beans.DateChooserCombo();
         eventId = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        uploadEventBtn1 = new javax.swing.JButton();
+        updatebtn = new javax.swing.JButton();
+        Deletebtn = new javax.swing.JButton();
+        add_Date = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -114,21 +119,21 @@ public class uploadEvent extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(0, 153, 204));
         jLabel6.setText("Email :");
 
-        updateButton.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
-        updateButton.setForeground(new java.awt.Color(0, 51, 51));
-        updateButton.setText("update");
-        updateButton.addActionListener(new java.awt.event.ActionListener() {
+        InsertButton.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
+        InsertButton.setForeground(new java.awt.Color(0, 51, 51));
+        InsertButton.setText("insert");
+        InsertButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateButtonActionPerformed(evt);
+                InsertButtonActionPerformed(evt);
             }
         });
 
         Event_Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null}
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Event Name", "Event Discription", "Participant", "Email"
+                "ID", "Event Name", "Event Discription", "Date", "Participant", "Email"
             }
         ));
         Event_Table.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -146,12 +151,19 @@ public class uploadEvent extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(0, 153, 255));
         jLabel4.setText("ID");
 
-        uploadEventBtn1.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
-        uploadEventBtn1.setForeground(new java.awt.Color(0, 51, 51));
-        uploadEventBtn1.setText("insert");
-        uploadEventBtn1.addActionListener(new java.awt.event.ActionListener() {
+        updatebtn.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
+        updatebtn.setForeground(new java.awt.Color(0, 51, 51));
+        updatebtn.setText("update");
+        updatebtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                uploadEventBtn1ActionPerformed(evt);
+                updatebtnActionPerformed(evt);
+            }
+        });
+
+        Deletebtn.setText("Delete");
+        Deletebtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeletebtnActionPerformed(evt);
             }
         });
 
@@ -162,50 +174,60 @@ public class uploadEvent extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(participantField))
+                                .addContainerGap()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(88, 88, 88)
-                                .addComponent(emailField))
-                            .addGroup(layout.createSequentialGroup()
+                                .addGap(40, 40, 40)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel8))
-                                .addGap(37, 37, 37)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(addDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(eventNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(eventDiscriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(eventId, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(25, 25, 25)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(participantField))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addGap(88, 88, 88)
+                                        .addComponent(emailField))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel1)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel8))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(37, 37, 37)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                    .addComponent(eventNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(eventDiscriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addComponent(eventId, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(50, 50, 50)
+                                                .addComponent(add_Date, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(0, 0, Short.MAX_VALUE)))))
+                        .addGap(49, 49, 49))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(107, 107, 107)
+                        .addComponent(InsertButton)
+                        .addGap(27, 27, 27)
+                        .addComponent(Deletebtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 469, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(107, 107, 107)
-                .addComponent(updateButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(35, 35, 35))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(32, 32, 32)
-                    .addComponent(uploadEventBtn1)
-                    .addContainerGap(848, Short.MAX_VALUE)))
+                    .addComponent(updatebtn)
+                    .addContainerGap(844, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -223,7 +245,7 @@ public class uploadEvent extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(addDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(add_Date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
@@ -231,15 +253,16 @@ public class uploadEvent extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(44, 44, 44)
-                .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(44, 44, 44)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(InsertButton, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                            .addComponent(Deletebtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(38, 38, 38))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap(336, Short.MAX_VALUE)
-                    .addComponent(uploadEventBtn1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(updatebtn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(37, 37, 37)))
         );
 
@@ -250,80 +273,144 @@ public class uploadEvent extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_eventDiscriptionFieldActionPerformed
 
-    private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateButtonActionPerformed
+    private void updatebtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatebtnActionPerformed
+        // TODO add your handling code here:
+       String updateQuery =null;
+       PreparedStatement ps = null;
+       Connection conn = getConnection();
+       
+       if(input_Check() && eventId.getText()!=null){
+           
+        
+           try {
+               updateQuery ="UPDATE ADDEVENT SET EVENT_NAME = ? , EVENT_DISCRIPTION= ? ,PARTICIPANT = ? Where ID = ?";
+               ps = conn.prepareStatement(updateQuery);
+                ps.setString(1,eventNameField.getText());
+                 ps.setString(2,eventDiscriptionField.getText() );
+                  int participant = Integer.parseInt(participantField.getText());
+                  ps.setInt(3,participant);
+                  int id = Integer.parseInt(eventId.getText());
+                  ps.setInt(4,id);
+                  
+                 ps.executeUpdate();
+                JOptionPane.showMessageDialog(null,"updated");
+                  
+                  
+             
+           } catch (SQLException ex) {
+               Logger.getLogger(uploadEvent.class.getName()).log(Level.SEVERE, null, ex);
+           }
+         
+       
+       }
+        
+        
+        
+        
+    }//GEN-LAST:event_updatebtnActionPerformed
+
+    private void InsertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InsertButtonActionPerformed
         // TODO add your handling code here:
         if(input_Check()){
             Connection conn = getConnection();
             //int participant = Integer.parseInt(participantField.getText());
             //int id = Integer.parseInt(eventId.getText());
-          //  String query = "INSERT INTO EVENT.ADDEVENT (ID, EVENT_NAME,EVENT_DISCRIPTION,PARTICIPANT, EMAIL) VALUES ( +id+,'"+eventNameField.getText().toString()+"','"+eventDiscriptionField.getText().toString()+"',+participant+ '"+ emailField.getText().toString()+"')";
-            
-              //   executeSqlQuery(query,"inserted");
-//                
-//  ps.setString(1,)
-//                ps.setString(2,eventNameField.getText());
-//                ps.setString(3,eventDiscriptionField.getText() );
-//                ps.setString(4,type.getText());
-//                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-DD");
-//                String addDate = dateFormat.format(date.getDateFormat());
-//                ps.setString(4, addDate);
-//                ps.setString(5,participantField.getText());
-//                ps.setString(6,emailField.getText());
+            //  String query = "INSERT INTO EVENT.ADDEVENT (ID, EVENT_NAME,EVENT_DISCRIPTION,PARTICIPANT, EMAIL) VALUES ( +id+,'"+eventNameField.getText().toString()+"','"+eventDiscriptionField.getText().toString()+"',+participant+ '"+ emailField.getText().toString()+"')";
+
+            //   executeSqlQuery(query,"inserted");
+            //
+            //  ps.setString(1,)
+            //                ps.setString(2,eventNameField.getText());
+            //                ps.setString(3,eventDiscriptionField.getText() );
+            //                ps.setString(4,type.getText());
+            //                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-DD");
+            //                String addDate = dateFormat.format(date.getDateFormat());
+            //                ps.setString(4, addDate);
+            //                ps.setString(5,participantField.getText());
+            //                ps.setString(6,emailField.getText());
             try {
-                
-                PreparedStatement ps = conn.prepareStatement("INSERT INTO EVENT.ADDEVENT (ID, EVENT_NAME,EVENT_DISCRIPTION,PARTICIPANT, EMAIL) VALUES (?,?,?,?,?)");
+
+                PreparedStatement ps = conn.prepareStatement("INSERT INTO EVENT.ADDEVENT (ID, EVENT_NAME,EVENT_DISCRIPTION,PARTICIPANT, EMAIL,DATE) VALUES (?,?,?,?,?,?)");
                 int participant = Integer.parseInt(participantField.getText());
                 int id = Integer.parseInt(eventId.getText());
                 ps.setInt(1,id);
-                  ps.setString(2,eventNameField.getText());
-                  ps.setString(3,eventDiscriptionField.getText() );
-                  
-                 
-                  ps.setInt(4,participant);
-                  ps.setString(5,emailField.getText());
-               
-//                   String pattern  = "yyyy-MM-dd";
-//                
-//               // java.util.Date eDate = (Date)eventList.getDate();
-//                SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-//                String addEventDate;
-//                
-//                addEventDate = dateFormat.format(addDate.getDateFormat());
-//                ps.setString(6, addEventDate);
-                  
-                  ps.executeUpdate();
-                   JOptionPane.showMessageDialog(null,"Inserted");
-                  
-                
-            
+                ps.setString(2,eventNameField.getText());
+                ps.setString(3,eventDiscriptionField.getText() );
+
+                ps.setInt(4,participant);
+                ps.setString(5,emailField.getText());
+
+                String pattern  = "yyyy-MM-dd";
+                SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+                 String addEventDate;
+
+               addEventDate = dateFormat.format(add_Date.getDate());
+               ps.setString(6, addEventDate);
+                    
+                   
+                ps.executeUpdate();
+                JOptionPane.showMessageDialog(null,"Inserted");
+
             } catch (SQLException ex) {
                 Logger.getLogger(uploadEvent.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
+
         }
 
         else{
             JOptionPane.showMessageDialog(null,"One or More Filed are Empty");
         }
-    }//GEN-LAST:event_updateButtonActionPerformed
-
-    private void uploadEventBtn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadEventBtn1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_uploadEventBtn1ActionPerformed
+    }//GEN-LAST:event_InsertButtonActionPerformed
 
     private void Event_TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Event_TableMouseClicked
         // TODO add your handling code here:
-        
-        int i  = Event_Table.getSelectedRow();
+         int i  = Event_Table.getSelectedRow();
         TableModel model = Event_Table.getModel();
        
         eventId.setText(model.getValueAt(i,0).toString());
         eventNameField.setText(model.getValueAt(i,1).toString());
         eventDiscriptionField.setText(model.getValueAt(i,2).toString());
-       participantField.setText(model.getValueAt(i,3).toString());
-        emailField.setText(model.getValueAt(i,4).toString());
+      
+        try{
+            Date addDate=null;
+            addDate = new SimpleDateFormat("dd/MM/yyyy").parse((String)( model.getValueAt(i, 3)));
+            
+                 
+            
+        } catch (ParseException ex) {
+            Logger.getLogger(uploadEvent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+       participantField.setText(model.getValueAt(i,4).toString());
+       emailField.setText(model.getValueAt(i,5).toString());
+        
     }//GEN-LAST:event_Event_TableMouseClicked
 
+    private void DeletebtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeletebtnActionPerformed
+        // TODO add your handling code here:
+        
+        String deleteQuery =null;
+       PreparedStatement ps = null;
+       Connection conn = getConnection();
+       
+     if(eventId.getText()!=null){
+        try{
+               deleteQuery ="Delete from ADDEVENT  Where ID = ?";
+               ps = conn.prepareStatement(deleteQuery);
+               int id = Integer.parseInt(eventId.getText());
+                ps.setInt(1,id);
+                ps.executeUpdate();
+                JOptionPane.showMessageDialog(null,"Deleted");
+                
+    }//GEN-LAST:event_DeletebtnActionPerformed
+       catch (SQLException ex) {
+               // Logger.getLogger(uploadEvent.class.getName()).log(Level.SEVERE, null, ex);
+                 JOptionPane.showMessageDialog(null," Not Deleted");
+            }
+        
+       }
+       }
     public ArrayList<myEventList> getEventList(){
         ArrayList<myEventList> eventList = new ArrayList<myEventList>();
         Connection conn = getConnection();
@@ -339,6 +426,7 @@ public class uploadEvent extends javax.swing.JFrame {
                         rs.getInt("ID"),
                         rs.getString("Event_Name"),
                         rs.getString("Event_Discription"),
+                        rs.getString("Date"),
                         rs.getInt("Participant"),rs.getString("Email"));
                         
                 
@@ -361,15 +449,16 @@ public class uploadEvent extends javax.swing.JFrame {
         ArrayList<myEventList> eventList =  getEventList() ;
         
         DefaultTableModel model = (DefaultTableModel)Event_Table.getModel() ;
-        Object row[] = new Object [5];
+        Object row[] = new Object [6];
         for (int i =0; i<eventList.size(); i++){
         
             row[0] = eventList.get(i).getId();
             row[1] = eventList.get(i).getEventName();
             row[2] = eventList.get(i).getEventDiscription();
-            row[3] = eventList.get(i).getParticipant();
-            row[4] = eventList.get(i).getEmail();
-          //  row[5] = eventList.get(i).getDate();
+            row[3] = eventList.get(i).getDate();
+            row[4] = eventList.get(i).getParticipant();
+            row[5] = eventList.get(i).getEmail();
+           
             
             model.addRow(row);
             
@@ -436,8 +525,10 @@ public class uploadEvent extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Deletebtn;
     private javax.swing.JTable Event_Table;
-    private datechooser.beans.DateChooserCombo addDate;
+    private javax.swing.JButton InsertButton;
+    private com.toedter.calendar.JDateChooser add_Date;
     private javax.swing.JTextField emailField;
     private javax.swing.JTextField eventDiscriptionField;
     private javax.swing.JTextField eventId;
@@ -451,7 +542,6 @@ public class uploadEvent extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField participantField;
-    private javax.swing.JButton updateButton;
-    private javax.swing.JButton uploadEventBtn1;
+    private javax.swing.JButton updatebtn;
     // End of variables declaration//GEN-END:variables
 }

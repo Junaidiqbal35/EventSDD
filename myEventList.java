@@ -20,11 +20,11 @@ class myEventList {
     int Participant;
     String Email;
 
-    public myEventList(int id, String eventName, String eventDiscription, int Participant, String Email) {
+    public myEventList(int id, String eventName, String eventDiscription,String Date, int Participant, String Email) {
         this.id = id;
         this.eventName = eventName;
         this.eventDiscription = eventDiscription;
-        //this.Date = Date;
+        this.Date = Date;
         this.Participant = Participant;
         this.Email = Email;
     }
